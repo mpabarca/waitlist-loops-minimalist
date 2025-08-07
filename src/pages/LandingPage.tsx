@@ -5,6 +5,7 @@ export default function LandingPage() {
   return (
     <main className='min-h-screen flex flex-col items-center justify-center mx-4 md:mx-auto text-center gap-8 pb-14'>
       <section className='flex flex-col gap-4 items-center'>
+        {/* Logo */}
         <img src='/vite.svg' alt='Logo' className='w-12 h-12 md:w-15 md:h-15' />
         <EarlyAccessBadge />
       </section>
