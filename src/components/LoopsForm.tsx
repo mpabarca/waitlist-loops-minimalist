@@ -11,22 +11,23 @@ type FormState = "INIT" | "SUBMITTING" | "ERROR" | "SUCCESS";
 const formStyles = {
   id: import.meta.env.VITE_LOOPS_FORM_ID,
   name: "Default",
-  formStyle: "buttonBelow",
+  formStyle: "buttonBelow", // or "inline"
   placeholderText: "you@example.com",
-  formFont: "Inter",
+  formFont: "inter", // match Tailwind class
   formFontColor: "#000000",
   formFontSizePx: 14,
   buttonText: "Join Waitlist",
-  buttonFont: "Inter",
+  buttonFont: "inter",
   buttonFontColor: "#ffffff",
   buttonColor: "#000000",
   buttonFontSizePx: 14,
   successMessage: "Thanks! We'll be in touch!",
-  successFont: "Inter",
+  successFont: "inter",
   successFontColor: "#000000",
   successFontSizePx: 14,
   userGroup: "",
 };
+
 const domain = "app.loops.so";
 
 export default function LoopsForm() {
@@ -39,26 +40,21 @@ export default function LoopsForm() {
   // >({});
   const fields: Record<string, string | number | boolean> = {};
 
+  /**
+   * Rate limit the number of submissions allowed
+   * @returns {boolean} true if the form has been successfully submitted in the past minute
+   */
   const resetForm = () => {
     setEmail("");
     setFormState(INIT);
     setErrorMessage("");
   };
 
-  /**
-   * Rate limit the number of submissions allowed
-   * @returns {boolean} true if the form has been successfully submitted in the past minute
-   */
   const hasRecentSubmission = () => {
-    const time = new Date();
-    const timestamp = time.valueOf();
+    const timestamp = new Date().valueOf();
     const previousTimestamp = localStorage.getItem("loops-form-timestamp");
 
-    // Indicate if the last sign up was less than a minute ago
-    if (
-      previousTimestamp &&
-      Number(previousTimestamp) + 60 * 1000 > timestamp
-    ) {
+    if (previousTimestamp && Number(previousTimestamp) + 60_000 > timestamp) {
       setFormState(ERROR);
       setErrorMessage("Too many signups, please try again in a little while");
       return true;
@@ -69,20 +65,20 @@ export default function LoopsForm() {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    // Prevent the default form submission
     event.preventDefault();
 
-    // boundary conditions for submission
     if (formState !== INIT) return;
+
     if (!isValidEmail(email)) {
       setFormState(ERROR);
       setErrorMessage("Please enter a valid email");
       return;
     }
+
     if (hasRecentSubmission()) return;
+
     setFormState(SUBMITTING);
 
-    // build additional fields
     const additionalFields = Object.entries(fields).reduce(
       (acc, [key, val]) => {
         if (val) {
@@ -93,12 +89,10 @@ export default function LoopsForm() {
       ""
     );
 
-    // build body
     const formBody = `userGroup=${encodeURIComponent(
       formStyles.userGroup
     )}&email=${encodeURIComponent(email)}&mailingLists=`;
 
-    // API request to add user to newsletter
     fetch(`https://${domain}/api/newsletter-form/${formStyles.id}`, {
       method: "POST",
       body: formBody + additionalFields,
@@ -121,7 +115,6 @@ export default function LoopsForm() {
       })
       .catch((error) => {
         setFormState(ERROR);
-        // check for cloudflare error
         if (error.message === "Failed to fetch") {
           setErrorMessage(
             "Too many signups, please try again in a little while"
@@ -138,25 +131,15 @@ export default function LoopsForm() {
   switch (formState) {
     case SUCCESS:
       return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
+        <div className='flex items-center justify-center w-full'>
           <p
-            style={{
-              fontFamily: `'${formStyles.successFont}', sans-serif`,
-              color: formStyles.successFontColor,
-              fontSize: `${formStyles.successFontSizePx}px`,
-            }}
+            className={`text-[${formStyles.successFontSizePx}px] text-[${formStyles.successFontColor}] font-[${formStyles.successFont}]`}
           >
             {formStyles.successMessage}
           </p>
         </div>
       );
+
     case ERROR:
       return (
         <>
@@ -164,18 +147,15 @@ export default function LoopsForm() {
           <BackButton />
         </>
       );
+
     default:
       return (
         <>
           <form
             onSubmit={handleSubmit}
-            style={{
-              display: "flex",
-              flexDirection: isInline ? "row" : "column",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-            }}
+            className={`flex  text-sm ${
+              isInline ? "flex-row space-x-2" : "flex-col space-y-2"
+            } items-center justify-center w-full`}
           >
             <input
               type='text'
@@ -183,22 +163,8 @@ export default function LoopsForm() {
               placeholder={formStyles.placeholderText}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required={true}
-              style={{
-                color: formStyles.formFontColor,
-                fontFamily: `'${formStyles.formFont}', sans-serif`,
-                fontSize: `${formStyles.formFontSizePx}px`,
-                margin: isInline ? "0px 10px 0px 0px" : "0px 0px 10px",
-                width: "100%",
-                maxWidth: "300px",
-                minWidth: "100px",
-                background: "#FFFFFF",
-                border: "1px solid #D1D5DB",
-                boxSizing: "border-box",
-                boxShadow: "rgba(0, 0, 0, 0.05) 0px 1px 2px",
-                borderRadius: "6px",
-                padding: "8px 12px",
-              }}
+              required
+              className={`w-full max-w-[300px] min-w-[100px] rounded-md border border-gray-300 bg-white px-3 py-2 text-[${formStyles.formFontSizePx}px] text-[${formStyles.formFontColor}] font-[${formStyles.formFont}] shadow-sm focus:outline-none focus:ring-2 focus:ring-black`}
             />
             {/* <input
               name='company'
@@ -206,10 +172,8 @@ export default function LoopsForm() {
                 setFields((prev) => ({ ...prev, company: e.target.value }))
               }
             /> */}
-            <div
-              aria-hidden='true'
-              style={{ position: "absolute", left: "-2024px" }}
-            ></div>
+            {/* Hidden honeypot */}
+            <div aria-hidden='true' className='absolute left-[-2024px]'></div>
             <SignUpFormButton />
           </form>
         </>
@@ -218,20 +182,8 @@ export default function LoopsForm() {
 
   function SignUpFormError() {
     return (
-      <div
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
-        <p
-          style={{
-            fontFamily: "Inter, sans-serif",
-            color: "rgb(185, 28, 28)",
-            fontSize: "14px",
-          }}
-        >
+      <div className='flex items-center justify-center w-full'>
+        <p className='text-red-700 font-sans'>
           {errorMessage || "Oops! Something went wrong, please try again"}
         </p>
       </div>
@@ -239,23 +191,12 @@ export default function LoopsForm() {
   }
 
   function BackButton() {
-    const [isHovered, setIsHovered] = useState(false);
-
     return (
       <button
-        style={{
-          color: "#6b7280",
-          font: "14px, Inter, sans-serif",
-          margin: "10px auto",
-          textAlign: "center",
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          textDecoration: isHovered ? "underline" : "none",
-        }}
-        onMouseOut={() => setIsHovered(false)}
-        onMouseOver={() => setIsHovered(true)}
         onClick={resetForm}
+        className="relative text-gray-500 mt-2 mx-auto text-center bg-transparent border-none cursor-pointer transition-all duration-300 ease-in-out
+        after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[1.2px] after:bg-gray-700
+        hover:after:w-full after:transition-all after:duration-300 after:ease-in-out hover:text-gray-700"
       >
         &larr; Back
       </button>
@@ -266,28 +207,13 @@ export default function LoopsForm() {
     return (
       <button
         type='submit'
-        style={{
-          background: formStyles.buttonColor,
-          fontSize: `${formStyles.buttonFontSizePx}px`,
-          color: formStyles.buttonFontColor,
-          fontFamily: `'${formStyles.buttonFont}', sans-serif`,
-          width: isInline ? "min-content" : "100%",
-          maxWidth: "300px",
-          whiteSpace: isInline ? "nowrap" : "normal",
-          height: "38px",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          padding: "9px 17px",
-          boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.05)",
-          borderRadius: "6px",
-          textAlign: "center",
-          fontStyle: "normal",
-          fontWeight: 500,
-          lineHeight: "20px",
-          border: "none",
-          cursor: "pointer",
-        }}
+        className={`w-full max-w-[300px] h-[38px] rounded-md px-4 py-2 bg-black text-white hover:bg-black/80 cursor-pointer text-[${
+          formStyles.buttonFontSizePx
+        }px] font-[${formStyles.buttonFont}] text-[${
+          formStyles.buttonFontColor
+        }] bg-[${formStyles.buttonColor}] shadow-sm ${
+          isInline ? "w-auto whitespace-nowrap" : ""
+        }`}
         {...props}
       >
         {formState === SUBMITTING ? "Please wait..." : formStyles.buttonText}
