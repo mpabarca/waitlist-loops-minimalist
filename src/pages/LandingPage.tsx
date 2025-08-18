@@ -56,7 +56,7 @@ export default function LandingPage() {
           </section>
 
           {/* Title & Subtitle */}
-          <section className='flex flex-col gap-4'>
+          <section className='flex flex-col items-center gap-4'>
             <h1 className='text-4xl font-bold'>Launch with Confidence</h1>
             <p className='max-w-md'>
               Collect emails, build hype, and validate your idea with a
