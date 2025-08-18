@@ -2,17 +2,42 @@ import EarlyAccessBadge from "@/components/EarlyAccessBadge";
 import Footer from "@/components/Footer";
 import LoopsForm from "@/components/LoopsForm";
 
+// Check colors in https://tailwindcss.com/docs/colors
+const styles = {
+  transparentBackground: {
+    parentStyle: {
+      background: "transparent",
+      padding: "px-5 pt-5",
+      sizeLogo: "w-12 h-12 md:w-15 md:h-15",
+    },
+    badgeStyle: {
+      // No border on badge, just background color
+      background: "bg-gray-100",
+      fontColor: "text-gray-600",
+      borderColor: "rounded-md",
+    },
+  },
+  colouredBackground: {
+    parentStyle: {
+      background: "bg-gray-100",
+      padding: "px-5 pt-5",
+      sizeLogo: "w-12 h-12 md:w-15 md:h-15",
+    },
+    badgeStyle: {
+      // With defined border color, but transparent background
+      background: "transparent",
+      fontColor: "text-gray-600",
+      borderColor: "rounded-md border border-gray-300",
+    },
+  },
+};
+
 export default function LandingPage() {
-  const parentStyle = {
-    background: "transparent",
-    padding: "px-5 pt-5",
-    sizeLogo: "w-12 h-12 md:w-15 md:h-15",
-  };
-  const badgeStyle = {
-    background: "bg-gray-100",
-    fontColor: "text-gray-600",
-    borderColor: "rounded-md",
-  };
+  // Choose between transparent background or with a defined color
+  const style = styles.transparentBackground;
+
+  const parentStyle = style.parentStyle;
+  const badgeStyle = style.badgeStyle;
 
   return (
     <main className='min-h-screen flex flex-col'>
