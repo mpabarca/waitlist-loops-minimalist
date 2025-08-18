@@ -153,7 +153,7 @@ export default function LoopsForm() {
         <>
           <form
             onSubmit={handleSubmit}
-            className={`flex  text-sm ${
+            className={`flex text-sm gap-1 ${
               isInline ? "flex-row space-x-2" : "flex-col space-y-2"
             } items-center justify-center w-full`}
           >
