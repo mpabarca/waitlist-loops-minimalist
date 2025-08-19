@@ -47,7 +47,7 @@ export default function LandingPage() {
         >
           {/* Logo + Badge */}
           <section className='flex flex-col gap-4 items-center'>
-            <img src='/vite.svg' alt='Logo' className={parentStyle.sizeLogo} />
+            <img src='/logo.png' alt='Logo' className={parentStyle.sizeLogo} />
             <EarlyAccessBadge
               background={badgeStyle.background}
               borderColor={badgeStyle.borderColor}
