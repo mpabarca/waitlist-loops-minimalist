@@ -1,4 +1,4 @@
-# waitlist-loops-base-template
+# waitlist-loops-minimalist
 
 The fastest way to launch a waitlist landing page.  
 Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), and [TailwindCSS](https://tailwindcss.com/).
