@@ -23,7 +23,7 @@ Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), and [Tailwi
 
 ```bash
 # 1. Clone the repo
-git clone git@github.com:your-org/waitlist-minimalist.git
+git clone git@github.com:your-org/waitlist-loops-minimalist.git
 
 # 2. Install dependencies
 npm install
